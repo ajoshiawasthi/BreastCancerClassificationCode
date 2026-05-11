@@ -8,7 +8,7 @@ Anika Joshi-Awasthi, Brianna Wang, Fetra Ramiandrisoa
 
 ## Overview
 
-This project compares seven machine learning classifiers on three breast cancer datasets with different measurement modalities. The goal is to classify tumors as malignant or benign, focusing on recall (sensitivity) as the primary metric, since a missed malignancy is clinically more harmful than a false positive.
+This project compares eight machine learning classifiers on three breast cancer datasets with different measurement modalities. The goal is to classify tumors as malignant or benign, focusing on recall (sensitivity) as the primary metric, since a missed malignancy is clinically more harmful than a false positive.
 
 ### Models Implemented
 - Logistic Regression (LR) (untuned baseline)
@@ -72,28 +72,23 @@ All code runs in Google Colab. The following packages are used:
    - `Runtime > Run all` (or `Ctrl+F9`)
    - The `mlxtend` and `ucimlrepo` install cells only need to run once per session
 
-> Cells must be run top to bottom. Variables like trained models, scalers, and split data are reused across cells — running out of order will cause errors.
+> Cells must be run top to bottom. Variables like trained models, scalers, and split data are reused across cells. Running out of order will cause errors.
 
 ---
 
 ## Design Decisions
 
-Feature selection:
-
+**Feature selection:**
 Wisconsin has 30 features; the top 10 by ANOVA F-score are used for distance-based models (LR, KNN, SVM, MLP) to reduce noise. RF, GB, and XGBoost use all 30 features since tree-based models handle high dimensionality well. Coimbra and Mammographic use all features (too few to warrant selection).
 
-Custom recall scorer:
-
+**Custom recall scorer:**
 All `GridSearchCV` calls use a custom scorer that pins `pos_label=1` (malignant/patient) to prevent the optimizer from gaming recall by predicting the majority class.
 
-Decision threshold:
-
+**Decision threshold:**
 RF on Wisconsin uses a lowered threshold of 0.3 (vs. default 0.5) to further prioritize recall. The threshold sensitivity plot in the notebook justifies this choice.
 
-Stacking ensemble:
-
+**Stacking ensemble:**
 Uses the top-10 scaled feature set so all base learners share a consistent input matrix. GB and XGBoost are excluded as base learners since they were trained on a different feature matrix (all 30 features).
 
-Class imbalance:
-
+**Class imbalance:**
 RF and SVM use `class_weight="balanced"`. XGBoost uses `scale_pos_weight` set to the ratio of negative to positive training samples.
